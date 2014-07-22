@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">KoLWiki</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="item_name_array">
+        <item>Sneaky Pete\'s basket</item>
+        <item>Zombie accordian</item>
+    </string-array>
+
+    <string name="title_activity_viewer">Viewer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_thing_viewer">ThingViewer</string>
+    <string name="title_activity_card">Card</string>
+
+</resources>
