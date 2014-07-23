@@ -1,6 +1,7 @@
 package kol.kolwiki;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
  
 public class MonsterAdapter extends ArrayAdapter<Monster> {
+	private final static String TAG = "MonsterAdapter";
+	
 	private final Context context;
 	private final Monster[] monsters;
  
@@ -27,21 +30,22 @@ public class MonsterAdapter extends ArrayAdapter<Monster> {
 		TextView textView = (TextView) rowView.findViewById(R.id.monster_name);
 		ImageView imageView = (ImageView) rowView.findViewById(R.id.monster_image);
 		textView.setText(monsters[position].getName());
+		Log.d(TAG, "Creating view for monster named " + monsters[position].getName());
  
 		int id = monsters[position].getId();
 		
 		// TODO make better link between id and images
 		switch (id) {
-		case 0: 
+		case 10: 
 			imageView.setImageResource(R.drawable.monster0);
 			break;
-		case 1: 
+		case 11: 
 			imageView.setImageResource(R.drawable.monster1);
 			break;
-		case 2: 
+		case 12: 
 			imageView.setImageResource(R.drawable.monster2);
 			break;
-		case 3: 
+		case 13: 
 			imageView.setImageResource(R.drawable.monster3);
 			break;		
 		}

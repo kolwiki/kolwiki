@@ -29,6 +29,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		Log.d(TAG, "onCreate(db)");
+		
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_MONSTERS + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
 				+ KEY_HP + " INTEGER" + KEY_ATTACK + " INTEGER" + KEY_DEFENSE
@@ -105,12 +107,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 
 	    return monsterList;
 	}
+	
+	// DEBUG
+	public void printFirstMonster(){
+		String selectQuery = "SELECT * FROM " + TABLE_MONSTERS + ";";
+		SQLiteDatabase db = this.getReadableDatabase();
+		Log.d(TAG, db.getPath());
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		if (cursor.moveToFirst()) {
+			Log.d(TAG, "printFirstMonster() has name " + cursor.getString(1));
+		}
+		else {
+			Log.d(TAG, "printFirstMonster() query failed");
+		}
+	}
 
 	public int getMonsterCount() {
         String countQuery = "SELECT  * FROM " + TABLE_MONSTERS;
         SQLiteDatabase db = this.getReadableDatabase();
+        
         Cursor cursor = db.rawQuery(countQuery, null);
         cursor.close();
+        db.close();
  
         return cursor.getCount();	
 	}
