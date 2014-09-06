@@ -47,7 +47,7 @@ public class Card extends ActionBarActivity {
 		switch (Integer.toString(id).charAt(0)) { // switching on a char
 		case '1': // monster
 			Monster monster = new Monster();
-			monster = db.getMonster(id);						
+			monster = (Monster) db.get(id, ThingType.MONSTER);						
 			thing = monster;
 			break;
 		default:

@@ -1,6 +1,7 @@
 package kol.kolwiki;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import kol.kolwiki.Thing.ThingType;
@@ -22,17 +23,24 @@ public class DatabaseHelper extends SQLiteAssetHelper {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
-	public Cursor getMonsterCursor() {
+	public Cursor getCursor(ThingType type) {
 		SQLiteDatabase db = getReadableDatabase();
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables("Monsters");
+		
+		switch (type) {
+		case MONSTER:
+			qb.setTables("Monsters");
+			break;
+		case ITEM:
+			qb.setTables("Items");
+		}
 
 		Cursor c = qb.query(db, null, null, null, null, null, null);
 		c.moveToFirst();
 		
 		return c;
 	}
-	
+		
 	// reload db from asset directory
 	public static void forceDatabaseReload(Context context){
 	    DatabaseHelper dbHelper = new DatabaseHelper(context);
@@ -43,43 +51,54 @@ public class DatabaseHelper extends SQLiteAssetHelper {
 	    db = dbHelper.getWritableDatabase();
 	}
 	
-	public List<Monster> getAllMonsters() {
-		List<Monster> monsters = new ArrayList<Monster>();
+	public List<Thing> getAll(ThingType type) {
+		List<Thing> things = new ArrayList<Thing>();
 		
-		Cursor c = getMonsterCursor();	
-		
-		do {			
-			monsters.add(readNextMonster(c));
+		Cursor c = getCursor(type);
+		do {
+			things.add(readNext(c, type));			
 		} while (c.moveToNext());
 		
-		return monsters;
+		return things;
 	}
 	
-	public List<Monster> getNMonsters(int n) {
-		List<Monster> monsters = new ArrayList<Monster>();
+	public List<Thing> getN(int n, ThingType type) {
+		List<Thing> things = new ArrayList<Thing>();
 		
-		Cursor c = getMonsterCursor();
-		
-		for (int i = 0; i < n; i++) {			
-			monsters.add(readNextMonster(c));
+		Cursor c = getCursor(type);
+		for (int i = 0; i < n; i++) {
+			things.add(readNext(c, type));
 			c.moveToNext();
 		}
 		
-		return monsters;
+		return things;
 	}
 	
+	/*
 	public Monster getNextMonster() {
 		return readNextMonster(getMonsterCursor());
 	}
+	*/
 	
-	public Monster getMonster(int id) {
-		Monster monster = new Monster();
-		
+	public Thing get(int id, ThingType type) {
+		// TODO use parameterized input or something
+		String tableName;
+		switch(type) {
+		case MONSTER:
+			tableName = "Monsters";
+			break;
+		case ITEM:
+			tableName = "Items";
+			break;
+		default:
+			tableName = null;
+		}
 		SQLiteDatabase db = getReadableDatabase();		
-		Cursor c = db.rawQuery("SELECT * FROM Monsters WHERE _id=" + id, null);		
+		Cursor c = db.rawQuery("SELECT * FROM " + tableName + " WHERE _id=" + id, null);		
 		c.moveToFirst();
 		
-		return readNextMonster(c);		
+		return readNext(c, type);		
+	
 	}
 	
 	// returns the Monster described at the Cursor position
@@ -106,6 +125,18 @@ public class DatabaseHelper extends SQLiteAssetHelper {
 		return monster;
 	}
 	
+	private Thing readNext(Cursor c, ThingType type) {
+		switch(type) {
+		case MONSTER:
+			return readNextMonster(c);
+		case ITEM:
+			return readNextItem(c);
+		default:
+			return null;
+		}
+	}
+
+	/*
 	public List<Monster> monsterQuery(String query) {
 		List<Monster> monsterList = new ArrayList<Monster>();		
 		SQLiteDatabase db = getReadableDatabase();		
@@ -118,4 +149,46 @@ public class DatabaseHelper extends SQLiteAssetHelper {
 		
 		return monsterList;
 	}
+	*/
+		
+	// returns the Item described at the Cursor position
+	private Item readNextItem(Cursor c) {
+		Item item = new Item();
+		
+		item.setType(ThingType.ITEM);		
+		item.setName(c.getString(c.getColumnIndexOrThrow("name")));
+		item.setId(c.getInt(c.getColumnIndexOrThrow("_id")));
+		item.setDescription(c.getString(c.getColumnIndexOrThrow("descr")));
+		item.setItemType(c.getString(c.getColumnIndexOrThrow("type")));
+		item.setSellPrice(c.getInt(c.getColumnIndexOrThrow("sellPrice")));
+		item.setTradable(Boolean.parseBoolean(c.getString(c.getColumnIndexOrThrow("tradable"))));
+		item.setDiscardable(Boolean.parseBoolean(c.getString(c.getColumnIndexOrThrow("discardable"))));
+		item.setQuestItem(Boolean.parseBoolean(c.getString(c.getColumnIndexOrThrow("questItem"))));
+		item.setLocation(c.getString(c.getColumnIndexOrThrow("location")));
+		item.setRequirement(c.getString(c.getColumnIndexOrThrow("requirement")));
+		item.setPower(c.getInt(c.getColumnIndexOrThrow("power")));
+		item.setSize(c.getInt(c.getColumnIndexOrThrow("size")));
+		item.setAdventures(c.getString(c.getColumnIndexOrThrow("adventures")));
+		item.setStats(c.getString(c.getColumnIndexOrThrow("stats")));
+		item.setEnchantment(c.getString(c.getColumnIndexOrThrow("echantment")));
+		item.setDuration(c.getString(c.getColumnIndexOrThrow("duration")));
+		item.setQuality(c.getString(c.getColumnIndexOrThrow("quality")));		
+		
+		return item;
+	}
+	
+	/*
+	public List<Item> itemQuery(String query) {
+		List<Item> itemList = new ArrayList<Item>();		
+		SQLiteDatabase db = getReadableDatabase();		
+		Cursor c = db.rawQuery(query, null);		
+		c.moveToFirst();
+		
+		do {			
+			itemList.add(readNextItem(c));
+		} while (c.moveToNext());
+		
+		return itemList;
+	}
+	*/
 }

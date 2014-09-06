@@ -3,6 +3,7 @@ package kol.kolwiki;
 import java.util.ArrayList;
 import java.util.List;
 
+import kol.kolwiki.Thing.ThingType;
 import android.support.v7.app.ActionBarActivity;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -28,16 +29,26 @@ public class ThingViewer extends ListActivity {
 			Log.d(TAG, "creating ThingViewer");
 			
 			getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-
 	 
 			DatabaseHelper.forceDatabaseReload(this);
-			DatabaseHelper db = new DatabaseHelper(this);	
-			//Monster[] monsters = db.getAllMonsters().toArray(new Monster[0]);			
-			List<Thing> monsterList = new ArrayList<Thing>(db.getAllMonsters());
+			DatabaseHelper db = new DatabaseHelper(this);
+			List<Thing> thingList = null;
+			switch (type) {
+			case MONSTER:
+				thingList = new ArrayList<Thing>(db.getAll(ThingType.MONSTER));
+				break;
+			case ITEM:
+				thingList = new ArrayList<Thing>(db.getAll(ThingType.ITEM));
+				break;
+			}
+			
+			
+			List<Thing> monsterList = new ArrayList<Thing>(db.getAll(ThingType.MONSTER));
 			Filter filter = new Filter(monsterList);
-			//filter.addRestriction("Location", "Tower Ruins", Filter.RestrictionType.EQUAL);
-			//filter.addRestriction("Safe moxie", "27", Filter.RestrictionType.GREATEREQUALTHAN);
+			filter.addRestriction("Location", "Tower Ruins", Filter.RestrictionType.EQUAL);
+			filter.addRestriction("Safe moxie", "27", Filter.RestrictionType.GREATEREQUALTHAN);
 			Monster[] monsters = filter.getList().toArray(new Monster[0]);
+			
 						
 			setListAdapter(new MonsterAdapter(this, monsters));
 		}
