@@ -57,15 +57,13 @@ public class Item extends Thing {
 	public void setQuality(String quality) { this.quality = quality; }
 
 	@Override
-	public String sideAText() {
-		// TODO Auto-generated method stub
-		return null;
+	public String sideAText() {	
+		return name + '\n' + itemType;
 	}
 
 	@Override
 	public String sideBText() {
-		// TODO Auto-generated method stub
-		return null;
+		return description;
 	}
 	
 }

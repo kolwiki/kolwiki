@@ -38,22 +38,23 @@ public class Card extends ActionBarActivity {
 
 		currentSide = Side.A;
 		int id = getIntent().getExtras().getInt("ID");
-		Log.d(TAG, "creating Card, id: " + id);		
-		
-		DatabaseHelper db = new DatabaseHelper(this);			
+		Log.d(TAG, "creating Card, id: " + id);
+
+		DatabaseHelper db = new DatabaseHelper(this);
 
 		// determine which type of thing is to be displayed and read it from the
 		// db
 		switch (Integer.toString(id).charAt(0)) { // switching on a char
 		case '1': // monster
-			Monster monster = new Monster();
-			monster = (Monster) db.get(id, ThingType.MONSTER);						
-			thing = monster;
+			thing = (Monster) db.get(id, ThingType.MONSTER);
+			break;
+		case '2': // item
+			thing = (Item) db.get(id, ThingType.ITEM);
 			break;
 		default:
 			Log.e(TAG, "unknown id[0]: " + Integer.toString(id).charAt(0));
 		}
-		
+
 		db.close();
 
 		showSide();
@@ -87,45 +88,19 @@ public class Card extends ActionBarActivity {
 	private void showSide() {
 		Log.d(TAG, "showSide()");
 		
+		TextView nameText = (TextView) findViewById(R.id.card_name);
+		TextView detailsText = (TextView) findViewById(R.id.card_sideA_details);
+		nameText.setText(thing.getName());
 		if (currentSide == Side.A) {
-			Log.d(TAG, "showing side A");
-			
-			TextView nameText = (TextView) findViewById(R.id.card_name);
-			ImageView thingImage = (ImageView) findViewById(R.id.card_image);
-			TextView detailsText = (TextView) findViewById(R.id.card_sideA_details);
-
-			if (thing.getType() == ThingType.MONSTER) {
-				Monster monster = (Monster) thing;
-
-				new ImageDownloadTask(monster.getUrl(), thingImage)
-		        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-
-				nameText.setText(monster.getName());
-				detailsText.setText(monster.sideAText());
-			}
-
-			else { // item etc.
-				Log.d(TAG, "not a monster");
-			}
-		} else { // showing side B
-			Log.d(TAG, "showing side B");
-			TextView nameText = (TextView) findViewById(R.id.card_name);
-			ImageView thingImage = (ImageView) findViewById(R.id.card_image);
-			TextView detailsText = (TextView) findViewById(R.id.card_sideA_details);
-
-			if (thing.getType() == ThingType.MONSTER) {
-				Monster monster = (Monster) thing;
-				
-				new ImageDownloadTask(monster.getUrl(), thingImage)
-		        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-				
-				nameText.setText(monster.getName());
-				detailsText.setText(monster.sideBText());
-			}
-			else { // item etc.
-				Log.d(TAG, "not a monster");
-			}
+			detailsText.setText(thing.sideAText());
 		}
+		else {
+			detailsText.setText(thing.sideBText());
+		}
+
+		ImageView thingImage = (ImageView) findViewById(R.id.card_image);
+		new ImageDownloadTask(thing.getUrl(), thingImage)
+		.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 	}
 
 	private void flip() {
@@ -134,45 +109,47 @@ public class Card extends ActionBarActivity {
 		} else {
 			currentSide = Side.A;
 		}
-		
+
 		showSide();
 	}
-	
-	private static class ImageDownloadTask extends AsyncTask<Bitmap, Void, Bitmap> {
+
+	private static class ImageDownloadTask extends
+	AsyncTask<Bitmap, Void, Bitmap> {
 		private String mUrl;
 		private ImageView mImageView;
-	    
-	    public ImageDownloadTask(String url, ImageView imageView) {
-	    	mUrl = url;
-	    	mImageView = imageView;
-	    }
+
+		public ImageDownloadTask(String url, ImageView imageView) {
+			mUrl = url;
+			mImageView = imageView;
+		}
 
 		public static Bitmap getBitmapFromURL(String src) {
-		    try {
-		        URL url = new URL(src);
-		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		        connection.setDoInput(true);
-		        connection.connect();
-		        InputStream input = connection.getInputStream();
-		        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-		        return myBitmap;
-		    } catch (IOException e) {
-		    	Log.e(TAG, "error loading " + src);
-		    	Log.e(TAG, e.getMessage());
-		        return null;
-		    }
+			try {
+				URL url = new URL(src);
+				HttpURLConnection connection = (HttpURLConnection) url
+						.openConnection();
+				connection.setDoInput(true);
+				connection.connect();
+				InputStream input = connection.getInputStream();
+				Bitmap myBitmap = BitmapFactory.decodeStream(input);
+				return myBitmap;
+			} catch (IOException e) {
+				Log.e(TAG, "error loading " + src);
+				Log.e(TAG, e.getMessage());
+				return null;
+			}
 		}
 
 		@Override
-		protected Bitmap doInBackground(Bitmap... params) {			
+		protected Bitmap doInBackground(Bitmap... params) {
 			return getBitmapFromURL(mUrl);
 		}
-		
+
 		@Override
 		protected void onPostExecute(Bitmap result) {
-		    if (result != null) {	        	
-	            mImageView.setImageBitmap(result);
-	        }	        	
+			if (result != null) {
+				mImageView.setImageBitmap(result);
+			}
 		}
 	}
 }

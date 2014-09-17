@@ -16,7 +16,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 public class DatabaseHelper extends SQLiteAssetHelper {
 	private static final String TAG = "DatabaseHelper";
 
-	private static final String DATABASE_NAME = "monster.db";
+	private static final String DATABASE_NAME = "test.db";
 	private static final int DATABASE_VERSION = 1;
 
 	public DatabaseHelper(Context context) {
@@ -170,9 +170,10 @@ public class DatabaseHelper extends SQLiteAssetHelper {
 		item.setSize(c.getInt(c.getColumnIndexOrThrow("size")));
 		item.setAdventures(c.getString(c.getColumnIndexOrThrow("adventures")));
 		item.setStats(c.getString(c.getColumnIndexOrThrow("stats")));
-		item.setEnchantment(c.getString(c.getColumnIndexOrThrow("echantment")));
+		item.setEnchantment(c.getString(c.getColumnIndexOrThrow("enchantment")));
 		item.setDuration(c.getString(c.getColumnIndexOrThrow("duration")));
-		item.setQuality(c.getString(c.getColumnIndexOrThrow("quality")));		
+		item.setQuality(c.getString(c.getColumnIndexOrThrow("quality")));	
+		item.setUrl(c.getString(c.getColumnIndexOrThrow("url")));
 		
 		return item;
 	}

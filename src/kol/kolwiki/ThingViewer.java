@@ -20,7 +20,7 @@ import android.widget.ListView;
 public class ThingViewer extends ListActivity {
 		private static final String TAG = "ThingViewer";		
 		
-		private Thing.ThingType type = Thing.ThingType.MONSTER;
+		private Thing.ThingType type = Thing.ThingType.ITEM;
 		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -42,15 +42,15 @@ public class ThingViewer extends ListActivity {
 				break;
 			}
 			
-			
+			/*
 			List<Thing> monsterList = new ArrayList<Thing>(db.getAll(ThingType.MONSTER));
 			Filter filter = new Filter(monsterList);
 			filter.addRestriction("Location", "Tower Ruins", Filter.RestrictionType.EQUAL);
 			filter.addRestriction("Safe moxie", "27", Filter.RestrictionType.GREATEREQUALTHAN);
 			Monster[] monsters = filter.getList().toArray(new Monster[0]);
-			
+			*/
 						
-			setListAdapter(new MonsterAdapter(this, monsters));
+			setListAdapter(new ThingArrayAdapter(this, thingList.toArray(new Thing[0])));
 		}
 	 
 		@Override
